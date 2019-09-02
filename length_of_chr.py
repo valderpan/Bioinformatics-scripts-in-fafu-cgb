@@ -13,7 +13,7 @@ with open(r'D:\Result\chr1.fasta','r') as f:
             print(line)
         chr_gene=chr_gene +line
 print(len(chr_gene))
-A=chr_gene.count('A')
+A=chr_gene.count('A') 
 G=chr_gene.count('G')
 C=chr_gene.count('C')
 T=chr_gene.count('T')
