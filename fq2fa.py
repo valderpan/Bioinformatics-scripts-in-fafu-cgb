@@ -1,6 +1,7 @@
 # #!/usr/bin/env python3
 # -*- encoding:utf-8 -*-
 
+
 '''
 将fastq文件转换为fasta文件
 '''
