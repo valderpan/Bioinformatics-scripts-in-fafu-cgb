@@ -57,7 +57,9 @@ def Get_infomation_from_gff(gff3_file,genome_fasta,item,output_file):
             end = int(gff_line_list[4])
             if gff_line_list[5] == '.':      #Optionally
                 score = '.'
-            else:
+            if gff_line_list[5] is float:
+                score = float(gff_line_list[5])
+            if gff_line_list[5] is int:
                 score = int(gff_line_list[5])
             strand = gff_line_list[6]
             phase = gff_line_list[7]         #Optionally
