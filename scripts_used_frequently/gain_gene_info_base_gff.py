@@ -6,6 +6,7 @@
 import re
 import pandas as pd
 import argparse
+import sys
 
 def gain_gene_position(gff_file,type,chrid):
     gff_df = pd.read_table(gff_file,comment='#',names=['Chrid','Source','Type','Start','End','Score','Strand','Phase','Attributes'])
@@ -37,7 +38,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        prog='test.py')
+        prog=sys.argv[0])
     parser.add_argument('-g', '--gff', required=True, help='Input gff3 file')
     parser.add_argument('-t', '--type', required=True, help='Select the type of data to extract(gene,CDS,exon,five_prime_UTR,mRNA,three_prime_UTR)')
     parser.add_argument('-c', '--chrid', nargs='+',required=True, help='Choose to extract chromosome name')
