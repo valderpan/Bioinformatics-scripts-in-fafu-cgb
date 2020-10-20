@@ -8,6 +8,7 @@ Usage:python families_count2venn_v3.py -O C:\\Users\\dell\\Desktop\\Nepal_projec
 '''
 import argparse
 import re
+import sys
 
 __author__ = 'Haoran Pan'
 __mail__ = 'haoran_pan@qq.com'
@@ -268,9 +269,9 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        prog='test.py',
+        prog=sys.argv[0],
         formatter_class=argparse.RawTextHelpFormatter,
-        description='''test script''',
+        description='''This script is used to make a venn diagram of the Orthogroups file in the output result of orthofinder''',
         epilog= 'author:\t{0}\nmail:\t{1}\nversion:\t{2}'.format(__author__,__mail__,__version__))
     parser.add_argument('-s', '--species', required=True,type=int, help='Inter the number of species used to compare')
     parser.add_argument('-O', '--Orthogroups', required=True, help='Input orthofinder output result Orthogroups.tsv')
