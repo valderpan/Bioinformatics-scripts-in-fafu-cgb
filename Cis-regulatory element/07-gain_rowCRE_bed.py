@@ -54,7 +54,7 @@ def gain_rowCRE_bed(rowCRE_file,output_path):
 
     result = pd.concat(rowCRE_concat)
     rowCRE_filename = re.findall('([0-9A-ZAa-z\_]+)\.tab',rowCRE_file)[0]
-    result.to_csv(output_path+'/'+rowCRE_filename+'.tab',sep='\t',header=True,index=False)
+    result.to_csv(output_path+'/'+rowCRE_filename+'.bed',sep='\t',header=True,index=False)
 
 
 if __name__ == '__main__':
