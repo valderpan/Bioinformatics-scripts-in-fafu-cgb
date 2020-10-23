@@ -131,7 +131,6 @@ def gain_rowCRE_info(input_path3,output_path3):
             print(rowCRE_bedname)
             df.to_csv(output_path3+'/'+rowCRE_bedname+'.info',sep='\t',header=True,index=False)
 
-# gain_rowCRE_info(r'D:\调控元件生信任务\数据\row_CRE',r'D:\调控元件生信任务\数据\row_CRE')
 
 def main(args):
     choose = args.choose
