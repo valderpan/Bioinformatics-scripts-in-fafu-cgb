@@ -97,7 +97,7 @@ if __name__ == '__main__':
         formatter_class=argparse.RawTextHelpFormatter,
         description='''Find genes with three or four sets of alleles in the polyploid genome, and output the CREs of 3 or 4 genes in each set of alleles''')
     parser.add_argument('-a', '--allele', required=True, help='Input allele table')
-    parser.add_argument('-c', '--crematrix', required=True, help='Import the genome-wide CRE file')
+    parser.add_argument('-c', '--crematrix', required=True, help='Input the genome-wide CRE file')
     parser.add_argument('-o', '--output', required=True, help='Output directory path')
     args = parser.parse_args()
     main(args)
