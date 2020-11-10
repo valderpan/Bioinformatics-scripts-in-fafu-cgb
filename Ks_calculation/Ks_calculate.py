@@ -4,6 +4,8 @@
 import sys
 import os
 import argparse
+
+
 fasta_dict = {}
 def fasta2dict(fasta_file):
     with open(fasta_file) as f:
@@ -18,9 +20,6 @@ def fasta2dict(fasta_file):
 
     return fasta_dict
 
-
-# fasta2dict(r'D:\Result\Transit\head5.Sspon.gene.fasta')
-# fasta2dict(sys.argv[1])
 
 def get_gene_ortholog_seq(anchor_file):
     if not os.path.exists('01-orthogene_ka_ks_seq'):
@@ -39,7 +38,6 @@ def get_gene_ortholog_seq(anchor_file):
                     output.write(seq_fa+'\n')
     output.close()
 
-# get_gene_ortholog_seq(sys.argv[2])
 
 def run_kaks_calculate():
     if not os.path.exists('02-kaks_result'):
@@ -48,7 +46,6 @@ def run_kaks_calculate():
     output.write('python /public1/home/stu_panhaoran/scripts/ks_calculate/synonymous_calc.py 01-orthogene_ka_ks_seq/Ortholog_gene_kaks_seq.fa > 02-kaks_result/ka_ks_result.txt ')
     output.close()
 
-# run_kaks_caculate()
 
 def result_merge(result_file):
     path = '02-kaks_result'
@@ -62,6 +59,7 @@ def result_merge(result_file):
                 output.write(line)
     output.close()
 
+    
 def main(args):
     if args.fasta and args.anchor :
         fasta_file = args.fasta
@@ -73,6 +71,7 @@ def main(args):
         result_file = args.output
         result_merge(result_file)
 
+        
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         prog='Ks_calculate.py',
