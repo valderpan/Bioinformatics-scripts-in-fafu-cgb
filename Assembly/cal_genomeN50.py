@@ -10,9 +10,14 @@ import Fontcolor as Font
 
 def calcultate_N50(genome_ctg_dict):
     ctgs_length = 0
+    contigs_num = 0
     for key in genome_ctg_dict.keys():
+        contigs_num += 1
         ctgs_length += len(genome_ctg_dict[key])
     Font.Log_output('ctg genome size:  {}'.format(ctgs_length))
+    Font.Log_output('Ctgs number:  {}'.format(contigs_num))
+    Font.Log_output('Average contig size:  {}'.format(round(ctgs_length/contigs_num,2)))
+    
     N50_length = round(ctgs_length/2)
     N50 = 0
     for key in sorted(genome_ctg_dict.items(),key=lambda x:len(x[1]),reverse=True):
@@ -21,6 +26,7 @@ def calcultate_N50(genome_ctg_dict):
         else:
             Font.Log_output('N50 contig:  {} , length  {}'.format(key[0],len(genome_ctg_dict[key[0]])))
             break
+            
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         Font.Scripts_tip('Calculate the N50 of the contig genome')
