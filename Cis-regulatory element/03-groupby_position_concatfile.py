@@ -13,7 +13,7 @@ pd.set_option('display.max_columns',8)
 
 def groupby_and_concat_files(dir_path,outputfile=0):
     '''
-    将plantCARE的结果进行处理并合并
+    将plantCARE的结果进行处理并合并,使用前需要将每个tab单独放于各自目录下
     :param dir_path:
     :param outputfile:
     :return:
@@ -139,6 +139,6 @@ if __name__ == '__main__':
         print('Usage:')
         print('\tpython {0} <PlantcareDir.path> <out.tab>'.format(sys.argv[0]))
     else:
-        CRE_df = groupby_and_concat_files(sys.argv[1],sys.argv[2])
-        CREDF = prepare_for_CRE_classification(CRE_df)
+        CRE_df = groupby_and_concat_files(sys.argv[1])
+        CREDF = prepare_for_CRE_classification(CRE_df,sys.argv[2])
         unmatched_check(CREDF)
