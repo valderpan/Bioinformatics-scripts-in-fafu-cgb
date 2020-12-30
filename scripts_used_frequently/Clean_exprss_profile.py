@@ -66,6 +66,3 @@ if __name__ == '__main__':
     else:
         df = average_rnaseq_expression(sys.argv[1])
         fpkm_filter(df,sys.argv[2])
-#
-# df = average_rnaseq_expression(r'E:\\潘浩然\\Result\\Transit\\fpkm_caculate\\全套\\01.SES-208_2016.09-SingleEnd.fpkm_dataframe.xlsx')
-# fpkm_filter(df,r'E:\潘浩然\Result\Transit\fpkm_caculate\cleaned\全套\SES_leaf.clean.xlsx')
