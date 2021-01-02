@@ -3,14 +3,14 @@
 # @Author : Haoran Pan
 # date: 2021/1/1
 
-import pandas as pd
+
 import sys
 import Fontcolor as Font
 
 
 def Gain_gmapgene2(gmap_gff3):
     '''
-    将gmap.gff3文件存入字典 →→→ {tigID@start@geneID:geneID} {geneID@num}:{tigID} {geneID:tig_list}
+    将gmap.gff3文件存入字典 →→→ {geneID:[tig_list]}
     :param gmap_gff3:
     :return:
     '''
@@ -22,6 +22,7 @@ def Gain_gmapgene2(gmap_gff3):
             else:
                 line_list = line.strip().split('\t')
                 if line_list[2] == 'gene':
+                    #Name=Sobic.001G000100→geneID
                     geneID = '.'.join(line_list[8].split(';')[1].split('=')[1].split('.')[0:2])
                     if geneID not in gene2ctg_dict.keys():
                         gene2ctg_dict[geneID] = [line_list[0]]
@@ -44,6 +45,7 @@ def parse_refgff3(ref_gff):
             else:
                 line_list = line.strip().split()
                 if line_list[2] == 'gene':
+                    #Name=Sobic.001G000100→geneID
                     geneID = line_list[8].split(';')[1].split('=')[1]
                     gene2start_dict[geneID] = line_list[0]+'@'+line_list[3]
     return gene2start_dict
