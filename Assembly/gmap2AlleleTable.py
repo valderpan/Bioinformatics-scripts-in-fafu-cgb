@@ -69,5 +69,5 @@ if __name__ == '__main__':
         print('\tpython {0} <gmap.gff3> <referenece.gff3> > <Allele.ctg.Table>'.format(sys.argv[0]))
     else:
         gene2ctgdict = Gain_gmapgene2(sys.argv[1])
-        gene2startdict = parse_refgff3(sys.argv[1])
+        gene2startdict = parse_refgff3(sys.argv[2])
         match_tig2gene(gene2ctgdict,gene2startdict)
