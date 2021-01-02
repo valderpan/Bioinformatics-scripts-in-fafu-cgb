@@ -68,6 +68,6 @@ if __name__ == '__main__':
         print('Usage:')
         print('\tpython {0} <gmap.gff3> <referenece.gff3> > <Allele.ctg.Table>'.format(sys.argv[0]))
     else:
-        gene2ctgdict = Gain_gmapgene2(r'C:\Users\admin\Desktop\脚本测试\gmap.gff3')
-        gene2startdict = parse_refgff3(r'C:\Users\admin\Desktop\脚本测试\Sbicolor_454_v3.1.1.gene.gff3')
+        gene2ctgdict = Gain_gmapgene2(sys.argv[1])
+        gene2startdict = parse_refgff3(sys.argv[1])
         match_tig2gene(gene2ctgdict,gene2startdict)
