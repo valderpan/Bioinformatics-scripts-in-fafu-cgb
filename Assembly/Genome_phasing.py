@@ -45,10 +45,8 @@ def depth_count(depthfile,outputfile):
                 reads_num = 0
                 coverage_depth = 0
                 output = contig + '\t' + str(depth)
-                # print(output.rstrip())
                 result.write(output.rstrip()+'\n')
         last_depth = float(coverage_depth)/float(reads_num)
-        # print(contig+'\t'+str(last_depth))
         result.write(contig+'\t'+str(last_depth)+'\n')
     result.close()
 
@@ -76,11 +74,8 @@ def calcultate_sample_length(fq_gz_file):
             elif line_index % 4 ==2:
                 reads_length += len(line)
     end = time.time()
-    # print('File {} reads num are {}'.format(str(fq_gz_file),reads_num))
     Fontcolor.Tips_output('File {} reads num are {}'.format(str(fq_gz_file),reads_num))
-    # print('File {} reads length are {}'.format(str(fq_gz_file),reads_length))
     Fontcolor.Tips_output('File {} reads length are {}'.format(str(fq_gz_file),reads_length))
-    # print('Time cost: {:.5f}'.format(end-start))
     Fontcolor.Tips_output('Time cost: {:.5f}'.format(end-start))
     return reads_length
 
@@ -102,18 +97,10 @@ def cal_genome_size(genome_fasta):
     genome_size = 0
     for key in fa_dict.keys():
         genome_size += len(fa_dict[key])
-    # print('Genome size is {} bp'.format(genome_size))
     Fontcolor.Tips_output('Genome size is {} bp'.format(genome_size))
     return genome_size
 
 
-# def run_step2():
-#     fq1length = calcultate_std_depth2(sys.argv[1])
-#     fq2length = calcultate_std_depth2(sys.argv[2])
-#     genomesize = cal_genome_size(sys.argv[3])
-#     std_depth = round((fq1length+fq2length)/genomesize)
-#     print('Standard Sequencing Depth is {}X'.format(std_depth))
-#     return std_depth
 def run_step2(fq1file,fq2file,genomefile):
     '''
     用二代reads的总长度/genome的大小得出标准测序深度
@@ -157,7 +144,6 @@ def ctg_phasing_base_depth(fasta_dict,depthcountfile,std_depth,Ploidy,result):
     :param result:
     :return:
     '''
-    # ctg_file   = fasta_dict
     depth_file = open(depthcountfile,'r')
     std_depth  = int(std_depth)
     ploidy = int(Ploidy)
@@ -206,7 +192,6 @@ def main(args):
 
 
 if __name__ == '__main__':
-    # depth_count(sys.argv[1],sys.argv[2])
     parser = argparse.ArgumentParser(
         prog=sys.argv[0],
         formatter_class=argparse.RawTextHelpFormatter,
