@@ -49,6 +49,17 @@ def Log_output(input_str):
     print(color.cyan(str("[{}]".format(now)) + '\t' + str(input_str)))
 
 
+def Commond_print(input_str):
+    '''
+    这里采用yellow对在shell中运行的commond进行输出
+    :param input_str:
+    :return:
+    '''
+    color = Colored()
+    now = datetime.now().replace(microsecond=0)
+    print(color.yellow(str("[{}]".format(now)) + ' Shell command: ' + str(input_str)))
+    
+
 def Error_commond(input_str):
     '''
     这里采用magenta色进行Error command的输出
