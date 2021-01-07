@@ -205,7 +205,7 @@ if __name__ == '__main__':
     parser.add_argument('-f2', '--fastq2', required=True, help='Input sample2 file(fastq2.gz)')
     parser.add_argument('-g', '--genome', required=True, help='Input Thr Sequencing assmbly genome(.fasta)')
     parser.add_argument('-p', '--ploidy', required=True, help='Input Ploidy of species(eg:8)')
-    parser.add_argument('-O', '--output', required=True, help='Output phased fasta file(.fasta)')
+    parser.add_argument('-O', '--output', required=True, help='Output the fasta sequence of the contig that only needs to be phased(.fasta)')
 
     args = parser.parse_args()
     main(args)
