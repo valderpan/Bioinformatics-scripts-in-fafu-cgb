@@ -113,7 +113,7 @@ def run_step2(fq1file,fq2file,genomefile):
     fq2length = calcultate_sample_length(fq2file)
     genomesize = cal_genome_size(genomefile)
     std_depth = round((fq1length + fq2length) / genomesize)
-    print('Standard Sequencing Depth is {}X'.format(std_depth))
+    Fontcolor.Tips_output('Standard Sequencing Depth is {}X'.format(std_depth))
     return std_depth
 
 
