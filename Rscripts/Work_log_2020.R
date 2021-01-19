@@ -374,3 +374,337 @@ ggplot(df, aes(xmin = Start, xmax = End, y = GeneID, fill = CRE,forward = direct
   facet_wrap(~ GeneID,scales = "free", ncol = 1) +
   theme_genes()
 ggsave('test.pdf',width = 30, height = 6)
+
+
+
+##-----------------------------------------------------
+##2020.11.04 对3/4个等位基因上的CRE分布进行柱状图/饼图可视化
+##-----------------------------------------------------
+library(ggplot2)
+library(reshape2)
+library(tidyquant)
+setwd('E:\\潘浩然\\调控元件生信任务\\数据\\allele_CRE_compare')
+df <- read.delim('row_332.allele4_4.info')
+df_melt <- melt(df,id.vars='GeneID')
+# df_melt <- df_melt[-c(21:24),]
+ggplot(df_melt,aes(x=GeneID,fill=variable))+
+  geom_bar(aes(y=value),stat = 'identity',color='black',width = 0.55)+
+  theme_classic()+theme(panel.grid.major =element_blank(), panel.grid.minor = element_blank())+
+  scale_x_discrete(labels=unique(df_melt$GeneID))+labs(fill='cis-element')+
+  xlab('')+ylab('Number of elements')+scale_y_continuous(expand=c(0,0))+
+  # scale_fill_manual(values = c('yellow','darkolivegreen1','lightskyblue','darkgreen',
+  #                                                         'deeppink','khaki2','firebrick','brown1','darkorange1',
+  #                                                         'cyan1','royalblue4','darksalmon','darkgoldenrod1',
+  #                                                         'darkseagreen','darkorchid','#3C5488B2',"#00A087B2",
+  #                                                         "#F39B7FB2","#91D1C2B2"))
+  scale_fill_manual(values = c("#0055AA","#C40003","#00C19B","#EAC862","#7FD2FF","#007ED3","#B2DF8A","#FFACAA","#FF9D1E",
+                               "#C3EF00","#CAB2D6","#894FC6","#2C3E50","#E31A1C","#18BC9C","#CCBE93","#A6CEE3","#1F78B4",
+                               "#B2DF8A","#FB9A99","#FDBF6F","#FF7F00"))
+
+
+rm(list = ls())
+setwd('E:\\潘浩然\\调控元件生信任务\\数据\\allele_CRE_compare')
+file_path <- paste0(paste0('allele',1:4),'CRE_infotop20.tab')
+for (j in seq(1,4)){
+  allele <- read.delim(file_path[j])
+  allele <- allele %>% mutate(Ratio=Count/sum(allele$Count)*100)
+  allele_new <- allele %>% 
+    arrange(desc(Site.Name)) %>%
+    mutate(ypos = cumsum(Ratio)- 0.5*Ratio )
+  ggplot(allele_new, aes(x="", y=Ratio, fill=Site.Name)) +
+    geom_bar(stat="identity", width=1, color="white") +
+    coord_polar("y", start=0) +
+    theme_void()  +
+    geom_text(aes(y = ypos, label = Site.Name), color = "white", size=5)+
+    geom_text(aes(y = ypos+1, label = round(Ratio,2)), color = "black", size=3)+
+  scale_fill_manual(values = c("#0055AA","#FF9900","#00C19B","#EAC862","#7FD2FF","#99FFCC","#B2DF8A","#FFACAA","#FFFF66",
+                               "#C3EF00","#CAB2D6","#894FC6","#2C3E50","#E31A1C","#bdbdbd","#CC9966","#A6CEE3","#1F78B4",
+                               "#33FF66","#FF3366","#CC3399","#8491B4FF"))
+  ggsave(paste0('allele',j,'_pie.pdf'),width = 12,height = 9)
+  }
+
+
+# allele <- read.delim('allele1CRE_infotop20.tab')
+# allele <- allele %>% mutate(Ratio=Count/sum(allele$Count)*100)
+# allele_new <- allele %>% 
+#   arrange(desc(Site.Name)) %>%
+#   mutate(ypos = cumsum(Ratio)- 0.5*Ratio )
+# ggplot(allele_new, aes(x="", y=Ratio, fill=Site.Name)) +
+#   geom_bar(stat="identity", width=1, color="white") +
+#   coord_polar("y", start=0) +
+#   theme_void()  +
+#   geom_text(aes(y = ypos, label = Site.Name), color = "white", size=5)+
+#   geom_text(aes(y = ypos+1, label = round(Ratio,2)), color = "black", size=4)+
+# scale_fill_manual(values = c("#0055AA","#FF9900","#00C19B","#EAC862","#7FD2FF","#99FFCC","#B2DF8A","#FFACAA","#FFFF66",
+#                              "#C3EF00","#CAB2D6","#894FC6","#2C3E50","#E31A1C","#bdbdbd","#CC9966","#A6CEE3","#1F78B4",
+#                              "#33FF66","#FB9A99","#CC3399","#8491B4FF"))
+# ggsave(paste0('allele',j,'.pdf'),width = 12,height = 9)
+
+
+
+##-----------------------------------------------------
+##2020.11.13 对1/2/3/4个等位基因上的Ks做redas mapping图
+##-----------------------------------------------------
+
+library(ggalt)
+library(ggplot2)
+library(readxl)
+library(reshape2)
+library(tidyquant)
+
+df <- read_excel('E:\\潘浩然\\调控元件生信任务\\数据\\Ks_reads_mapping\\Ks_reads_mapping.xlsx')
+colnames(df)[1] <- 'reads_mapping'
+df <- melt(df,id.vars = 'reads_mapping')
+x1 <- palette_light()
+ggplot(df,aes(x=reads_mapping,y=value,color=variable))+
+  geom_xspline(spline_shape = 1,size=1)+
+  scale_colour_manual(values = matrix(x1)[,1])+
+  theme_classic()+
+  theme(legend.position=c(0.8,0.8))+
+  theme(text=element_text(size=12))+
+  theme(legend.title  =  element_blank())+
+  xlab('Synonymous substitution rate (Ks)')+
+  ylab('Percentage of gene pairs')+
+  scale_y_continuous(expand=c(0,0))+
+  scale_x_continuous(expand=c(0,0))
+  
+
+
+##--------------------------------------------------------------------
+##2020.11.25 对1/2/3/4个等位的基因在昼夜节律2h上的表达水平Kmeans聚类##
+##--------------------------------------------------------------------
+library(xlsx)
+library(Mfuzz)
+df <- read.xlsx('E:\\潘浩然\\调控元件生信任务\\数据\\allele_CRE_compare\\allele_gene\\allele1.Rep.daynight2h_expression.xlsx',sheetIndex=1)
+rownames(df) <- df[,1]
+df <- df[,-1]
+count <- data.matrix(df) 
+eset <- new("ExpressionSet",exprs = count)
+count <- count[rowMeans(count)>0,]
+pseduo <- 0.01
+count <- count+pseduo
+eset <- filter.std(eset,min.std=1)
+eset <- standardise(eset)
+c <- 10
+#  评估出最佳的m值
+m <- mestimate(eset)
+# 聚类
+cl <- mfuzz(eset, c = c, m = m)
+cl$size
+mfuzz.plot(eset,cl,mfrow=c(2,5),new.window= FALSE)
+
+
+
+##--------------------------------------------------------------------
+##2020.11.25 对1/2/3/4个等位的基因的CRE在上游2k水平上的分布##
+##这里是将2K分成了四个bin，每个bin500kb                    ##
+##--------------------------------------------------------------------
+library(ggplot2)
+library(reshape2)
+df <- read.delim('E:\\潘浩然\\调控元件生信任务\\数据\\allele_CRE_compare\\allele_gene\\ALLallele.Rep.distribution2plot.txt')
+dd <- melt(df,id.vars = 'Allele')
+ggplot(dd,aes(x=variable,y=value,fill=Allele))+geom_bar(position = 'dodge',stat="identity",color='black')+scale_colour_manual(values = matrix(x1)[,1])+theme_bw()
+
+
+
+##------------------------------------------------------------------------
+##2020.12.03 对Bru1 1MB片段进行reads maping 统计每个片段的coverage后作图##
+##------------------------------------------------------------------------
+library(ggplot2)
+library(dplyr)
+library(ggridges)
+Sb <- read.delim('F:\\Bru1\\Sb.coverage',sep = '\t',col.names = c('ctgID','reads','coverage'))
+Sr <- read.delim('F:\\Bru1\\Sr.coverage',sep = '\t',col.names = c('ctgID','reads','coverage'))
+LA <- read.delim('F:\\Bru1\\Soffic.coverage',sep = '\t',col.names = c('ctgID','reads','coverage'))
+Ss <- read.delim('F:\\Bru1\\Sspon.coverage',sep = '\t',col.names = c('ctgID','reads','coverage'))
+
+Sb %<>% mutate(Sb,ID='Sb') %>% select(ID,reads,coverage)
+Sr %<>% mutate(Sr,ID='Sr') %>% select(ID,reads,coverage)
+LA %<>% mutate(LA,ID='LA') %>% select(ID,reads,coverage)
+Ss %<>% mutate(Ss,ID='Ss') %>% select(ID,reads,coverage)
+all <- rbind(Sr,LA,Ss,Sb)
+ggplot(all_test,aes(x=reads,y=coverage,color=ID))+geom_line()+facet_wrap(ID~.,ncol = 1)+theme_bw()
+
+#分成几个bin进行计算，每个bin包括5wbp。
+Sb_bin1 <- Sb[c(1:50000),]
+Sr_bin1 <- Sr[c(1:50000),]
+LA_bin1 <- LA[c(1:50000),]
+Ss_bin1 <- Ss[c(1:50000),]
+all_bin1 <- rbind(Sb_bin1,Sr_bin1,LA_bin1,Ss_bin1)
+ggplot(all_bin1,aes(x=reads,y=coverage,color=ID))+geom_area()+facet_wrap(ID~.,ncol = 1)+
+  scale_colour_manual(values= c("#E31A1C", "#18BC9C", "#A6CEE3","#FF7F00"))+theme_bw()+
+  theme(legend.title=element_blank())+theme(legend.position="none")
+
+## 着重看527500-727500这20w bp 的区间
+Sb_querybin1 <- Sb[c(527500:577500),]
+Sr_querybin1 <- Sr[c(577501:627500),]
+LA_querybin1 <- LA[c(627501:677500),]
+Ss_querybin1 <- Ss[c(677501:727500),]
+all_querybin1 <- rbind(Sb_querybin1,Sr_querybin1,LA_querybin1,Ss_querybin1)
+ggplot(all_querybin1,aes(x=reads,y=coverage,color=ID))+geom_area()+facet_wrap(ID~.,ncol = 1,strip.position = 'right')+
+  scale_colour_manual(values= c("#E31A1C", "#18BC9C", "#A6CEE3","#FF7F00"))+theme_bw()+
+  theme(legend.title=element_blank())+theme(legend.position="none")+theme(axis.text=element_text(size=16),axis.title=element_text(size=20,face="bold"))
+
+
+#-----------------1206给表达量数据进行log10处理------------------------
+library(readxl)
+library(dplyr)
+library(tibble)
+library(magrittr)
+# df <- read_excel('C:\\Users\\admin\\Desktop\\allele1.Rep.leaf.xlsx',sheet = 1)
+# df %<>% column_to_rownames('gene_id') 
+setwd('E:\\潘浩然\\调控元件生信任务\\数据\\allele_CRE_compare\\1206')
+df2 <- read_excel('allele4.Rep.leaf.xlsx')
+df2 %<>% column_to_rownames('gene_id')
+dd <- log10(df2)
+write.csv(dd,'allele4.Rep.leaf.log10.csv')
+
+
+
+
+#------------------1207对1/2/3/4 等位基因上保守不保守分布的统计-------------
+library(ggplot2)
+setwd('C:\\Users\\admin\\Desktop\\20201205\\diff_allele_all_gene')
+df <- read.table('genenum_count2plot.txt',header = TRUE)
+ggplot(df,aes(x=Allele,y=Num))+geom_bar(aes(fill=Type),stat="identity",position = 'dodge',width = 0.5,color='black')+scale_fill_manual(values=c("#69b3a2","orange"))+theme(legend.position="top")+labs(fill = '')+theme_bw()+theme(axis.text=element_text(size=16),axis.title=element_text(size=20,face="bold"))
+#------------1207按照表达量值的高低对全基因组范围内的基因进行聚类-------------
+library(pheatmap)
+library(readxl)
+library(reshape2)
+library(dplyr)
+library(tibble)
+library(magrittr) #为了能使用%<>%
+library(ggplot2)
+df <- read_excel('E:\\潘浩然\\Result\\Transit\\fpkm_caculate\\cleaned\\全套\\SES_leaf.clean.xlsx')
+df %<>% column_to_rownames('gene_id')
+# dd <- round(scale(df),2)
+dd <- round(log10(df),2)
+p <- pheatmap(dd, show_rownames = F, cellwidth =40, cluster_cols = F, 
+              cutree_rows = 6,gaps_col = c(2,4,6,8,10,12,14), angle_col = 45,fontsize = 12)
+p
+ggsave('cluster_base_exp.pdf',width = 50,height = 100)
+
+
+
+
+
+library(stringr)
+library(dplyr)
+df1 <- read.table('C:\\Users\\admin\\Desktop\\20201205\\diff_allele_all_gene\\allele1.all_CRE_position.txt')
+df1 <-  mutate(df1,Type='A1') %>% select(Type,V1,V2)
+df1 <- mutate(df1,bin = str_split_fixed(df1$V2, "bin", 2)[,2]) %>% select(Type,V1,bin)
+df1 <- mutate(df1,pos=as.numeric(bin)*100)
+
+df2 <- read.table('C:\\Users\\admin\\Desktop\\20201205\\diff_allele_all_gene\\allele2.all_CRE_position.txt')
+df2 <-  mutate(df2,Type='A2') %>% select(Type,V1,V2)
+df2 <- mutate(df2,bin = str_split_fixed(df2$V2, "bin", 2)[,2]) %>% select(Type,V1,bin)
+df2 <- mutate(df2,pos=as.numeric(bin)*100)
+
+df3 <- read.table('C:\\Users\\admin\\Desktop\\20201205\\diff_allele_all_gene\\allele3.all_CRE_position.txt')
+df3 <-  mutate(df3,Type='A3') %>% select(Type,V1,V2)
+df3 <- mutate(df3,bin = str_split_fixed(df3$V2, "bin", 2)[,2]) %>% select(Type,V1,bin)
+df3 <- mutate(df3,pos=as.numeric(bin)*100)
+
+df4 <- read.table('C:\\Users\\admin\\Desktop\\20201205\\diff_allele_all_gene\\allele4.all_CRE_position.txt')
+df4 <-  mutate(df4,Type='A4') %>% select(Type,V1,V2)
+df4 <- mutate(df4,bin = str_split_fixed(df4$V2, "bin", 2)[,2]) %>% select(Type,V1,bin)
+df4 <- mutate(df4,pos=as.numeric(bin)*100)
+all_df <- rbind(df1,df2,df3,df4)
+ggplot(all_df,aes(x=Type,y=pos,fill=Type))+geom_boxplot()
+
+
+
+#--------------20201209 对叶段基因表达量分组K1/2/3/4 画小提琴图-----------
+library(ggplot2)
+library(dplyr)
+library(readxl)
+library(tibble)
+library(magrittr)
+
+setwd('E:\\潘浩然\\Result\\Transit\\fpkm_caculate\\cleaned\\全套')
+for (i in (1:4)) {
+  print(i)
+}
+df1 <- read_excel('SES_leaf.clean.xlsx',sheet = 2)
+df1 %<>% column_to_rownames('gene_id')
+df1 %<>% select(Average) 
+df1 %<>% log10() 
+df1 %<>% mutate(Type='K1') 
+
+df2 <- read_excel('SES_leaf.clean.xlsx',sheet = 3)
+df2 %<>% column_to_rownames('gene_id')
+df2 %<>% select(Average) 
+df2 %<>% log10() 
+df2 %<>% mutate(Type='K2')
+
+df3 <- read_excel('SES_leaf.clean.xlsx',sheet = 4)
+df3 %<>% column_to_rownames('gene_id')
+df3 %<>% select(Average) 
+df3 %<>% log10() 
+df3 %<>% mutate(Type='K3')
+
+df4 <- read_excel('SES_leaf.clean.xlsx',sheet = 5)
+df4 %<>% column_to_rownames('gene_id')
+df4 %<>% select(Average) 
+df4 %<>% log10() 
+df4 %<>% mutate(Type='K4')
+
+df <- rbind(df1,df2,df3,df4)
+ggplot(df,aes(x=Type,y=Average,fill=Type))+geom_boxplot()+coord_flip()
+
+
+#--------20201211对Np-X、LA中各个染色体上不同等位与Sb的近源关系画箱线图---------------
+library(readxl)
+library(reshape2)
+library(dplyr)
+library(tibble)
+library(magrittr)
+library(ggplot2)
+setwd('C:\\Users\\admin\\Desktop\\LA_allele_ks')
+df <- read_excel('Np-X_allele.ks.xlsx',sheet = 2)
+dfch1 <- melt(df)
+dfch1 %<>% separate(variable,c('Chr','allele','allele2'),'_')
+dfch1 %<>% mutate(Allele=paste(allele,allele2,sep = '_')) %>% select(Chr,Allele,value)
+head(dfch1)
+
+for(i in 1:10) { 
+  nam <- paste("chr", i, sep = "")
+  # nam[i] <- read_excel('Np-X_allele.ks.xlsx',sheet = i+1)
+  # head(nam[i])
+  # assign(nam,read_excel('Np-X_allele.ks.xlsx',sheet = i+1))
+  # assign(nam,melt(nam))
+}
+
+
+
+#--------对不同等位数目基因上的CRE进行统计------------
+library(dplyr)
+library(ggplot2)
+
+setwd('C:\\Users\\admin\\Desktop\\20201205\\diff_allele_Rep_gene\\gene2CREnum')
+df1con <- read.table('allele1.all.con.gene2freq.bed')
+df1con %<>% mutate(Type='A1-Con') %>% select(Type,V2)
+df1non <- read.table('allele1.all.non.gene2freq.bed')
+df1non %<>% mutate(Type='A1-Non') %>% select(Type,V2)
+
+df2con <- read.table('allele2.all.con.gene2freq.bed')
+df2con %<>% mutate(Type='A2-Con') %>% select(Type,V2)
+df2non <- read.table('allele2.all.non.gene2freq.bed')
+df2non %<>% mutate(Type='A2-Non') %>% select(Type,V2)
+
+df3con <- read.table('allele3.all.con.gene2freq.bed')
+df3con %<>% mutate(Type='A3-Con') %>% select(Type,V2)
+df3non <- read.table('allele3.all.non.gene2freq.bed')
+df3non %<>% mutate(Type='A3-Non') %>% select(Type,V2)
+
+df4con <- read.table('allele4.all.con.gene2freq.bed')
+df4con %<>% mutate(Type='A4-Con') %>% select(Type,V2)
+df4non <- read.table('allele4.all.non.gene2freq.bed')
+df4non %<>% mutate(Type='A4-Non') %>% select(Type,V2)
+
+alldf <- rbind(df1con,df1non,df2con,df2non,df3con,df3non,df4con,df4non)
+head(alldf)
+alldf %<>% separate(Type,c('type','type2'),'-')
+head(alldf)
+ggplot(alldf,aes(Type,V2,fill=Type))+geom_boxplot(outlier.colour = NA)+ylim(0,200)+
+  stat_boxplot(geom = 'errorbar',width=0.3)+scale_fill_manual(values=c("orange", "#69b3a2"))
