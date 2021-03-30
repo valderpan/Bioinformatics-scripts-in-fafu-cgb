@@ -3,39 +3,27 @@
 # @Author : Haoran Pan
 # date: 2021/3/12
 
-'''
-将10组保守的group与剩余非保守的group分别进行整合排序后输出为xlsx文件
-'''
+__author__ = 'Haoran Pan'
+__mail__ = 'haoran_pan@qq.com'
+__date__ = '20210330'
+__version__ = 'v3.0'
 
 import pandas as pd
 import CPCS1
 import re
+import sys
+import argparse
 
-pd.set_option('display.max_columns', 10)
 
 def parse_ConGroups(group_df,conserverd_group_num,conserverd_group_concat):
-    '''
-    排序并输出10组保守的group
-    :param conserverd_file:将10组gruop保存在一个excel文件中
-    :return:
-    '''
-    print(group_df)
     writer_conserverd = pd.ExcelWriter('conserverd_group.xlsx')
-    for num in conserverd_group_num: #[6,7,8,13,31,49,62,70,73,103]
-        # print(num)
-        #--------将每个保守的group block整合后分别输出-----------------------
+    for num in conserverd_group_num:
         conserverd_group_individual_concat = []
         for j in conserverd_group_concat:
             group_id = re.findall('[0-9]+',j.iloc[1,:]['ROC_group'])[0]
-            # print(group_id)
-            # break
             if int(group_id) == int(num):
-                # print(j)
                 conserverd_group_individual_concat.append(j)
-        # print(conserverd_group_individual_concat)
         conserverd_group_individual=pd.concat(conserverd_group_individual_concat)
-        #--------------------------------------------------------------
-        #-------------对每个group进行'###'分割为blocks，排序后整合输出到xlsx中---------------------
         sub_split_blocks_row = []
         for index, row in conserverd_group_individual.iterrows():
             if group_df.loc[index]['ROC_id'] == '###':
@@ -48,7 +36,7 @@ def parse_ConGroups(group_df,conserverd_group_num,conserverd_group_concat):
             else:
                 group_split_blocks_dict[i] = group_df.iloc[
                                              sub_split_blocks_row[i]:conserverd_group_individual.index[-1] + 1, :]
-        #这里是按照每个blocks中高粱gene的位置均值来排序
+
         con2sort = {}
         for j in group_split_blocks_dict.keys():
             con2sort[int(group_split_blocks_dict[j]['Sb_gene_position'].mean())] = group_split_blocks_dict[j]
@@ -66,21 +54,17 @@ def split_num():
     all_groups_num = [i for i in range(1,80)]   #80个group就将range改为1,80 #TODO
     split_group_num = [all_groups_num[i:i+20] for i in range(0,80,20)]
     return split_group_num
-    # print(split_group_num)
-    # for i in split_group_num:
-    #     print(len(i))
+
 
 def parse_NonGroups(group_df,conserverd_group_num,nonconserverd_group_concat):
     split_groups_num = split_num()
-    # print(split_groups_num)
-    # group_df = remove_redundant_comment_line(group_file)
-    # group_df = group_df.reset_index(drop=True)
+
 
     for split_group in split_groups_num[:-1]:
         writer_nonconserverd = pd.ExcelWriter('nonconserverd_group_'+str(split_group[0])+'_'+str(split_group[-1])+'.xlsx')
         for num in split_group:
             if str(num) not in conserverd_group_num:
-                # --------将每个保守的group block整合后分别输出-----------------------
+
                 nonconserverd_group_individual_concat = []
                 for j in nonconserverd_group_concat:
                     group_id = re.findall('[0-9]+', j.iloc[1, :]['ROC_group'])[0]
@@ -92,7 +76,6 @@ def parse_NonGroups(group_df,conserverd_group_num,nonconserverd_group_concat):
                     continue
 
                 # --------------------------------------------------------------
-                # -------------对每个group进行'###'分割为blocks，排序后整合输出到xlsx中---------------------
                 sub_split_blocks_row = []
                 for index, row in nonconserverd_group_individual.iterrows():
                     if group_df.loc[index]['ROC_id'] == '###':
@@ -106,7 +89,7 @@ def parse_NonGroups(group_df,conserverd_group_num,nonconserverd_group_concat):
                         group_split_blocks_dict[i] = group_df.iloc[
                                                      sub_split_blocks_row[i]:nonconserverd_group_individual.index[-1] + 1,
                                                      :]
-                # 这里是按照每个blocks中高粱gene的位置均值来排序
+                
                 non2sort_1 = {}
                 for j in group_split_blocks_dict.keys():
                     non2sort_1[int(group_split_blocks_dict[j]['Sb_gene_position'].mean())] = group_split_blocks_dict[j]
@@ -156,10 +139,27 @@ def parse_NonGroups(group_df,conserverd_group_num,nonconserverd_group_concat):
     last_writer.save()
 
 
+def main(args):
+    sort_tab = args.input
+    con_list = args.conserved
 
-if __name__ == '__main__':
-    group_df = CPCS1.remove_redundant_comment_line(r'E:\Badila\synteny_analysis\C03\parsed1\C03.parse1.xlsx')
-    ConGroup_num,non,con = CPCS1.SeparateClassifiBlocks(group_df)
-    parse_ConGroups(group_df,ConGroup_num,con)
+    group_df = CPCS1.remove_redundant_comment_line(sort_tab)
+    ConGroup_num, non, con = CPCS1.SeparateClassifiBlocks(group_df,con_list)
+    parse_ConGroups(group_df, ConGroup_num, con)
     split_num()
     parse_NonGroups(group_df, ConGroup_num, non)
+
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        prog=sys.argv[0],
+        formatter_class=argparse.RawTextHelpFormatter,
+        description='''Delete the redundant "#" between segments in each group, split each segment according to "#", and divide the conservative and non-conservative ones into a dataframe respectively.
+                       The 10 conservative groups and the remaining non-conservative groups are sorted separately and output as xlsx files''',
+        usage="python {} -i <sort.xlsx> -c conserved_group_num ".format(sys.argv[0]),
+        epilog='author:\t{0}\nmail:\t{1}\ndate:\t{2}\nversion:\t{3}'.format(__author__, __mail__, __date__,__version__))
+    parser.add_argument('-i','--input',required=True,help='Input sorted xlsx')
+    parser.add_argument('-c','--conserved',nargs='+',required=True,help='Input conserved group number')
+    args = parser.parse_args()
+    main(args)
