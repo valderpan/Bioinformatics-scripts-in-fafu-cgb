@@ -155,8 +155,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         prog=sys.argv[0],
         formatter_class=argparse.RawTextHelpFormatter,
-        description='''Delete the redundant "#" between segments in each group, split each segment according to "#", and divide the conservative and non-conservative ones into a dataframe respectively.
-                       The 10 conservative groups and the remaining non-conservative groups are sorted separately and output as xlsx files''',
+        description='''Delete the redundant "#" between segments in each group, split each segment according to "#", and divide the conservative and non-conservative ones into a dataframe respectively.\nThe 10 conservative groups and the remaining non-conservative groups are sorted separately and output as xlsx files''',
         usage="python {} -i <sort.xlsx> -c conserved_group_num ".format(sys.argv[0]),
         epilog='author:\t{0}\nmail:\t{1}\ndate:\t{2}\nversion:\t{3}'.format(__author__, __mail__, __date__,__version__))
     parser.add_argument('-i','--input',required=True,help='Input sorted xlsx')
