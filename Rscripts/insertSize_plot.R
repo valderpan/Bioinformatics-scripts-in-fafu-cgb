@@ -22,8 +22,7 @@ option_list <- list(make_option(c("-i","--input"),type="character", default = NU
 args <- parse_args(OptionParser(option_list=option_list))
 
 df <- read.table(args$input)
-dd <- df %>% group_by(V1) %>% summarise(count=n())
-dd <- dd %>% mutate(count = count/1000)
+dd <- df %>% group_by(V1) %>% summarise(count=n()) %>% mutate(count = count/1000)
 
 ggplot(dd,aes(x=V1,y=count))+
   geom_bar(stat = 'identity', fill="#FF7F00", alpha=.8,width=1)+
