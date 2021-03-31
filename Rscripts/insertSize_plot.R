@@ -5,6 +5,7 @@
 
 #=================================================
 #ATAC-Seq InsertFragmentSize stats
+#Input：samtools view -f 0x40 ${i}.sorted.dedup.bam | perl -ane 'print abs($F[8]);print "\n";' | sort -n > ${i}.insertSize.txt
 #=================================================
 
 library(ggplot2)
