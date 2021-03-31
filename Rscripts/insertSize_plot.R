@@ -32,5 +32,5 @@ ggplot(dd,aes(x=V1,y=count))+
   theme_prism(base_size = 10)+
   theme_prism(base_fontface = "bold")+
   theme_prism(border = TRUE) + coord_cartesian(clip = "off")+
-  ggtitle(args$name)
+  ggtitle(args$name) +
   ggsave(args$output,width = 10,height=8)
