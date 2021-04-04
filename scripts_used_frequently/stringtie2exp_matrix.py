@@ -1,45 +1,44 @@
 #!/usr/bin/env python3
 # -*- encoding:utf-8 -*-
 # @Author : Haoran Pan
-# @Time : 2020/10/11 11:04
+# @Time : 2021/04/04
 
-'''
-需求：Hisat2+stringtie表达量计算后将每个样本中基因的表达值整理为矩阵用于后续分析
-'''
 
 import pandas as pd
 import re
-import os
+from path import Path
 import sys
+sys.path.append('/share/home/stu_panhaoran/scripts')
+import Fontcolor as Font
 
-def get_fpkm_file(file_path):
-    all_file_list = os.listdir(file_path)
-    fpkm_file_list = [file for file in all_file_list if file.endswith('.tab')]
-    return fpkm_file_list
+def getFpkmfile(file_path):
+    files = [file for file in Path(file_path).files() if file.endswith('.tab')]
+    return files
 
-def merge_file2matrix(file_path,file_list,output):
-    df2merge_list = []
-    for file in file_list:
-        file_name = re.findall('([0-9A-Za-z\_\.\-]*)\.tab',file)[0]
-        df = pd.read_table(file_path+'/'+file,sep='\t')
-        df2merge = round(df.iloc[:,[0,-2]],2)
+
+def merge2matrix(files,output_file):
+    mergedf_list = []
+    for file in files:
+        file_name = re.findall('([0-9A-Za-z\_\.\-]*)\.tab', file)[0]
+        df = pd.read_table(file,sep='\t',float_precision='round_trip')
+        df2merge = df.loc[:,['Gene ID','FPKM']]
+        df2merge['FPKM'] = round(df2merge['FPKM'],2)
         df2merge.rename(columns={'FPKM':file_name},inplace=True)
-        df2merge_list.append(df2merge)
+        mergedf_list.append(df2merge)
 
-    first_df2merge = df2merge_list[0]
-    df2merge_dict = {}
+    df_1 = mergedf_list[0].sort_values(by='Gene ID')
 
-    for i in range(1,len(df2merge_list)):
-        df2merge_dict[i] = df2merge_list[i]
-        if i < len(df2merge_list):
-            first_df2merge = pd.merge(first_df2merge,df2merge_dict[i],on='Gene ID')
+    for i in range(1,len(mergedf_list)):
+        df_1 = pd.merge(df_1,mergedf_list[i],on="Gene ID")
 
-    first_df2merge.to_csv(output,header=True,index=False,sep='\t')
+    df_1.to_csv(output_file,sep='\t',header=True,index=False)
+
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        print("Usage:")
-        print('\tpython {0} file_path output_file'.format(sys.argv[0]))
+    if len(sys.argv) == 3:
+        files = getFpkmfile(sys.argv[1])
+        merge2matrix(files,sys.argv[2])
     else:
-        file_list = get_fpkm_file(sys.argv[1])
-        merge_file2matrix(sys.argv[1],file_list,sys.argv[2])
+        Font.Scripts_tip('Combine the expression values of each sample into a matrix after calculating the expressions from Hisat2+stringtie pipeline')
+        print('Usage:')
+        print('\tpython {0} [Path of tab files] <output_tab_file>'.format(sys.argv[0]))
