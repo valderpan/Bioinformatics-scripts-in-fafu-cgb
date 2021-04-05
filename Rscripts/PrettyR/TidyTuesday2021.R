@@ -284,3 +284,133 @@ bar_plot <-
 result_plot <- bar_plot/heatmap
 
 ggsave("20210302_result.pdf", result_plot, height = 12, width = 16, units = "in", dpi = 300)
+
+
+
+
+#=================================================
+#[2021-03-09]   配色很好看！！！！
+#@Finished time:2021-04-04
+#@Data description:https://github.com/rfordatascience/tidytuesday/tree/master/data/2021/2021-03-09
+#=================================================
+library(tidytuesdayR)
+library(tidyverse)
+library(patchwork)
+#remotes::install_github("davidsjoberg/ggstream")
+library(ggstream)
+library(ggbeeswarm)
+library(ggtext)
+
+theme_set(theme_void())
+
+tuesdata <- tt_load(2021, week = 11)
+readme(tuesdata)
+
+
+bechdel_df <- tuesdata$movies %>%
+  mutate(clean_test = case_when(     #判断筛选到a时，将a替换为b
+    clean_test == "ok" ~ "Pass Bechdel",
+    clean_test == "dubious" ~ "Dubious",
+    clean_test == "men" ~ "About men",
+    clean_test == "notalk" ~ "No talk",
+    clean_test == "nowomen" ~ "No women",
+  )) %>%
+  mutate(
+    clean_test = as.factor(clean_test),
+    clean_test = fct_relevel(clean_test, c("Pass Bechdel", "Dubious",
+                                           "About men", "No talk", "No women"))
+  )
+
+perc_rating <- bechdel_df %>%
+  count(year, clean_test) %>%
+  group_by(year) %>%
+  mutate(perc_rating = n / sum(n))
+
+bechdel_beeswarm <- bechdel_df %>%
+  group_by(year) %>%
+  arrange(clean_test) %>%
+  mutate(position = row_number()) %>%   #这里的row_number是经过group_by之后的，故会按照group_by后进行统计
+  ggplot(aes(year, position, color = clean_test)) +
+  geom_beeswarm(size = 0.6) +
+  scale_color_manual(values = palette) +
+  scale_x_continuous(breaks = seq(1970,2010,10),
+                     expand = c(0.01, 0.01)) +
+  guides(color = FALSE) +
+  theme_void()+
+  theme(plot.background = element_rect(fill = bck_clr, color = NA),   #将整体背景改为黑色
+        strip.text = element_text(color = "white", margin = margin(5,0,0,0)),
+        legend.position = "bottom",
+        axis.text.x = element_text(color = "white", size = 9, margin = margin(10,0,0,0)),  #将x轴上字体改为白色
+        axis.ticks.x = element_line(color = "white"),   #将x轴上的刻度点改为白色
+        plot.margin = margin(0,0,10,0))
+
+bechdel_beeswarm
+
+bechdel_stream <- perc_rating %>% 
+  ggplot(aes(year, perc_rating, fill = clean_test)) +
+  geom_stream() +
+  scale_fill_manual(values = palette) +
+  scale_x_continuous(breaks = seq(1970,2010,10), expand = c(0.01, 0.01)) +
+  guides(fill = guide_legend(label.position = "top",   #设置图例中每个小图例中字体和颜色的位置，此处为字体在颜色上方
+                             title.hjust = 0.5,			#设置图例标题的左右位置
+                             keywidth = unit(4, "line"), #设置图例中每个小图例颜色的宽度与长度，line为单位
+                             keyheight = unit(1, "line"),
+                             nrow = 1  #将图例排成一行显示
+  )
+  )+
+  theme_void()+
+  theme(
+    plot.background = element_rect(fill = bck_clr, color = NA),
+    strip.text = element_text(color = "white"),
+    legend.position = "bottom",
+    legend.text = element_text(color = "white", size = 9),
+    legend.title = element_blank()
+  )
+
+bechdel_stream
+
+bechdel_genre <- bechdel_df %>%
+  mutate(main_genre = str_remove(word(genre, 1), ","),
+         main_genre = fct_lump_n(main_genre, 7,   #fct_lump_n(main_genre,7,...):将main_genre列出现频率最高的前7个正常打印，剩余的其他的均打印为"Less common\n genres"
+                                 other_level = "Less common\n genres"),
+         clean_test = as.factor(clean_test),
+         binary = str_to_title(binary)) %>%  #str_to_title首字母大写
+  filter(!is.na(main_genre)) %>% 
+  count(clean_test, main_genre, binary) %>%
+  group_by(main_genre) %>%
+  mutate(perc_rating = n / sum(n)) %>%
+  ggplot(aes(binary, perc_rating, fill = clean_test)) +
+  geom_col() +
+  scale_fill_manual(values = palette) +
+  facet_wrap(~main_genre, scales = "free_y", ncol = 8) +  #scales="free_y"参数表示分面后每个面都是相对独立的y轴
+  guides(fill = FALSE) +   #去除图例
+  theme_void()+   #分面后使用这个主题，可以将分面的框框去掉！！！
+  theme(plot.background = element_rect(fill = bck_clr, color = NA),
+        strip.text = element_text(color = "white", margin = margin(0,0,5,0)),  #字体变为白色
+        plot.margin = margin(30,0,0,0),
+        panel.spacing.x = unit(1.5, "lines"))   #设置分面后每个面之间的间距
+
+bechdel_genre
+
+
+final <- bechdel_beeswarm / bechdel_stream / bechdel_genre +
+  plot_layout(nrow = 3, heights = c(1, 0.5, 0.2)) +
+  plot_annotation(
+    title = "Bechdel Test - Presence of women in films",
+    theme = theme(
+      plot.margin = margin(10,20,10,20),
+      plot.background = element_rect(fill = bck_clr, color = NA),
+      plot.title = element_text(size = 20,
+                                hjust = 0.5, margin = margin(10,0,0,0), color = "white"),
+      plot.subtitle = element_text(
+        size = 10, hjust = 0.5,
+        margin = margin(5,0,0,0),lineheight = 1.1),
+      plot.caption = element_text(
+        size = 8, color = "white", margin = margin(15,0,0,0))      
+    )
+  )
+
+
+final
+
+ggsave('20210309_result.pdf',final,height = 15,width = 12,units = 'in',dpi = 300)
