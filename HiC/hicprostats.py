@@ -101,13 +101,13 @@ def statsresult(dirlist):
         print('\t','Lib Dup (%)',round(100-Lib_Valid_Rate,3),sep='\t')
 
 
+        
 if __name__ == '__main__':
-    if __name__ == '__main__':
-        if len(sys.argv) != 2:
-            Font.Scripts_tip('Convert HiC-Pro output stats results into publishable level tables\n'
-                             'Note: This script is available in both absolute and relative paths')
-            print('Usage:')
-            print('\tpython {0} hicpro_output(HiC-Pro -o parameter specifies the directory)'.format(sys.argv[0]))
-        else:
-            dir_list = findresultfile(sys.argv[1])
-            statsresult(dir_list)
+    if len(sys.argv) != 2:
+        Font.Scripts_tip('Convert HiC-Pro output stats results into publishable level tables\n'
+                         'Note: This script is available in both absolute and relative paths')
+        print('Usage:')
+        print('\tpython {0} hicpro_output(HiC-Pro -o parameter specifies the directory)'.format(sys.argv[0]))
+    else:
+        dir_list = findresultfile(sys.argv[1])
+        statsresult(dir_list)
