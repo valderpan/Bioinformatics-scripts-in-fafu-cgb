@@ -22,9 +22,9 @@ def cal_ctgN50(CtgGenome_dict):
     N50_length = round(ctgs_length / 2, 2)
     N50 = 0
 
-    Font.Log_output('Shortest ctg sequence length:  {} bp'.format(
-        len(list(enumerate(sorted(CtgGenome_dict.items(), key=lambda x: len(x[1]))))[-1][1][1])))
     Font.Log_output('Longest ctg sequence length:  {} bp'.format(
+        len(list(enumerate(sorted(CtgGenome_dict.items(), key=lambda x: len(x[1]))))[-1][1][1])))
+    Font.Log_output('Shortest ctg sequence length:  {} bp'.format(
         len(list(enumerate(sorted(CtgGenome_dict.items(), key=lambda x: len(x[1]))))[0][1][1])))
 
     for key in sorted(CtgGenome_dict.items(), key=lambda x: len(x[1]), reverse=True):
