@@ -326,6 +326,13 @@ perc_rating <- bechdel_df %>%
   group_by(year) %>%
   mutate(perc_rating = n / sum(n))
 
+
+palette <- c("Pass Bechdel" = "#3C989E", "Dubious" = "#F4CDA5",
+             "No women" = "#BA415D", "No talk" = "#ED5276","About men" = "#F09CB0")
+
+bck_clr <- "grey30"
+
+
 bechdel_beeswarm <- bechdel_df %>%
   group_by(year) %>%
   arrange(clean_test) %>%
