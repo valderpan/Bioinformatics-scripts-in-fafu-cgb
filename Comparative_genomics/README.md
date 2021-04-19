@@ -1,1 +1,1 @@
-## Script for comparative genomics analysis
+## Scripts for comparative genomics analysis
