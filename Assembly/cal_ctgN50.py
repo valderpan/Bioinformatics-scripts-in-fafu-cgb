@@ -19,7 +19,7 @@ def cal_ctgN50(CtgGenome_dict):
     Font.Log_output('Total length of ctgs:  {} bp'.format(ctgs_length))
     Font.Log_output('Average contig size:  {} bp'.format(round(ctgs_length / contigs_num, 2)))
 
-    N50_length = round(ctgs_length / 2, 2)
+    N50_length = ctgs_length / 2
     N50 = 0
 
     Font.Log_output('Longest ctg sequence length:  {} bp'.format(
@@ -27,11 +27,10 @@ def cal_ctgN50(CtgGenome_dict):
     Font.Log_output('Shortest ctg sequence length:  {} bp'.format(
         len(list(enumerate(sorted(CtgGenome_dict.items(), key=lambda x: len(x[1]))))[0][1][1])))
 
-    for key in sorted(CtgGenome_dict.items(), key=lambda x: len(x[1]), reverse=True):
-        if N50 < N50_length:
-            N50 += len(CtgGenome_dict[key[0]])
-        else:
-            Font.Log_output('N50 contig:  {} , length  {}'.format(key[0], len(CtgGenome_dict[key[0]])))
+    for num,key in enumerate(sorted(CtgGenome_dict.items(), key=lambda x: len(x[1]), reverse=True)):
+        N50 += len(CtgGenome_dict[key[0]])
+        if N50 >= N50_length:
+            Font.Log_output('N50 contig:  {} ({} sequences),length  {} bp'.format(key[0],num+1 ,len(CtgGenome_dict[key[0]])))
             break
 
 
