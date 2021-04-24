@@ -14,7 +14,7 @@ import SetLog as log
 
 __author__ = 'Haoran Pan'
 __mail__ = 'haoran_pan@qq.com'
-__date__ = '20210419'
+__date__ = '20210424'
 __version__ = 'v1.1'
 
 
