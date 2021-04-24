@@ -15,7 +15,7 @@ import SetLog as log
 __author__ = 'Haoran Pan'
 __mail__ = 'haoran_pan@qq.com'
 __date__ = '20210419'
-__version__ = 'v1.0'
+__version__ = 'v1.1'
 
 
 
@@ -62,10 +62,10 @@ def msa2phylip(gene2seq,species_list):
                 if '/' in species:
                     name1, name2 = species.split('/')
                     # print(name1,species2seq[name1])
-                    f.write('{}\t{}\n'.format(name1,species2seq[name1]))
+                    f.write('{}    {}\n'.format(name1,species2seq[name1]))
                 else:
                     # print(species,species2seq[species])
-                    f.write('{}\t{}\n'.format(species,species2seq[species]))
+                    f.write('{}    {}\n'.format(species,species2seq[species]))
     else:
         species_length = [str(i) for i in species_length]
         print('\t'.join(species_length))
