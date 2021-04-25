@@ -14,8 +14,8 @@ import SetLog as log
 
 __author__ = 'Haoran Pan'
 __mail__ = 'haoran_pan@qq.com'
-__date__ = '20210424'
-__version__ = 'v1.1'
+__date__ = '20210425'
+__version__ = 'v1.2'
 
 
 
@@ -32,7 +32,7 @@ def parse_msa(msa_files):
     return  gene2seq
 
 
-def msa2phylip(gene2seq,species_list):
+def msa2phylip(gene2seq,species_list,file_type):
     species_length = []
     species2seq = {}
     for species in species_list:
@@ -56,7 +56,7 @@ def msa2phylip(gene2seq,species_list):
 
     length_uniq = list(set(species_length))
     if len(length_uniq) == 1:
-        with open('SingleCopy.pep.phylip','w') as f:
+        with open('SingleCopy.{}.phylip'.format(file_type),'w') as f:
             f.write('{}\t{}\n'.format(len(species_list),length_uniq[0]))
             for species in species_list:
                 if '/' in species:
@@ -75,9 +75,10 @@ def msa2phylip(gene2seq,species_list):
 def main(args):
     msapath = args.path
     specieslist = args.species
+    type = args.type
     msa_files = get_msa(msapath)
     gene2seq = parse_msa(msa_files)
-    msa2phylip(gene2seq,specieslist)
+    msa2phylip(gene2seq,specieslist,type)
 
 
 if __name__ == '__main__':
@@ -88,6 +89,7 @@ if __name__ == '__main__':
         usage="python {} -p msa_path -s ID1 ID2 ID3..\n\nNote:ID is the ID of the gene in the genome of each species!!!\nGenerated file: SingleCopy.pep.phylip".format(sys.argv[0]),
         epilog= 'author:\t{0}\nmail:\t{1}\ndate:\t{2}\nversion:\t{3}'.format(__author__,__mail__,__date__,__version__))
     parser.add_argument('-p','--path',required=True,help='Input the path where the msa file is located')
+    parser.add_argument('-t','--type',required=True,choices=['pep','cds'],help='Input the path where the msa file is located')
     parser.add_argument('-s','--species',required=True,nargs='+',help='Input the gene ID prefix for each species genome')
     args = parser.parse_args()
     main(args)
