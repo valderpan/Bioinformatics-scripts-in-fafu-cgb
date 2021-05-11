@@ -33,7 +33,6 @@ def cal_MD5(file_path):
         res = subprocess.check_output('md5sum {}/*.gz'.format(file_path), shell=True)
         res = res.decode('utf-8')
         res_list = [tmp.split('  ') for tmp in res.split('\n')]
-        # print(res_list)
         for i in res_list:
             if len(i[0]) > 1:
                 name = [i for i in re.findall('\/([0-9a-zA-Z\-\_\.]+)',i[1]) if i.endswith('.gz')][0]
