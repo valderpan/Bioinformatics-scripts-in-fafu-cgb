@@ -32,11 +32,8 @@ def msa2phylip_OG(msa_files,species_list,output_path):
                 for key in gene2seq.keys():
                     for specie in species_list:
                         if key.startswith(specie):
-
-
                             fw.write('{}    {}\n'.format(specie,gene2seq[key]))
-                        # fw.write(specie+'\n')
-                        # fw.write(gene2seq[key]+'\n')
+
         else:
             log.error_out('Species msa length is inconsistent')
 
