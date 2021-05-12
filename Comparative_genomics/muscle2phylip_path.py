@@ -87,7 +87,7 @@ if __name__ == '__main__':
         prog=sys.argv[0],
         formatter_class=argparse.RawTextHelpFormatter,
         description='''Combine the results of multiple sequence alignments end to end to form a super-gene to generate a phylip file''',
-        usage="python {} -p msa_path -s ID1 ID2 ID3..\n\nNote:ID is the ID of the gene in the genome of each species!!!\nGenerated file: SingleCopy.pep.phylip".format(sys.argv[0]),
+        usage="python {} -p msa_path -t type -s ID1 ID2 ID3..\n\nNote:ID is the ID of the gene in the genome of each species!!!\nGenerated file: SingleCopy.pep.phylip".format(sys.argv[0]),
         epilog= 'author:\t{0}\nmail:\t{1}\ndate:\t{2}\nversion:\t{3}'.format(__author__,__mail__,__date__,__version__))
     parser.add_argument('-p','--path',required=True,help='Input the path where the msa file is located')
     parser.add_argument('-t','--type',required=True,choices=['pep','cds'],help='Specify the type of input sequence')
