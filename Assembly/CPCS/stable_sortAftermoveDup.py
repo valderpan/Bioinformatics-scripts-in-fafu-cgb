@@ -57,4 +57,3 @@ if __name__ == '__main__':
         split_row_list = stable_sort2checkDup.stat_block_pos(stable_df)
         concat_row_list = stable_sort2checkDup.split_every_block(stable_df,split_row_list)
         sort_perContig(concat_row_list,stable_df_rows,df_name)
-        # sort_perBlock_perContig(concat_row_list, stable_df_rows, df_name)
