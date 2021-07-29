@@ -2,9 +2,6 @@
 # -*- encoding:utf-8 -*-
 # @Author : Haoran Pan
 
-#滑窗分析测试
-#给定一个窗口，一个步长，测定全基因组范围内的基因数目
-
 import sys
 import math
 import argparse
@@ -129,20 +126,13 @@ def main(args):
     tree_D = slid_window(geno_D, window, step)
     newtree_D = parse_overlap(chr_tree, tree_D)
     output_result(newtree_D)
-# if __name__ == '__main__':
-#     geno_D = read_genome(r'D:\FAFU-CGB\2021summervacation\doctor\浙大医学院面试\Sspon.v20190103.cds.fasta')
-#     chr_tree = read_gff_intree(r'D:\FAFU-CGB\2021summervacation\doctor\浙大医学院面试\Sspon.v20190103.test.gff3')
-#     # print('Chr_tree:{}'.format(chr_tree))
-#     tree_D = slid_window(geno_D,50,50)
-#     # print('tree_D:{}'.format(tree_D))
-#     newtree_D = parse_overlap(chr_tree,tree_D)
-#     # print('newtree_D:{}'.format(newtree_D))
-#     output_result(newtree_D)
+
+    
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         prog=sys.argv[0],
         formatter_class=argparse.RawTextHelpFormatter,
-        description='''Sliding window to stat gene num''',
+        description='''Sliding window to stat gene num on genome-wide fasta''',
         usage="python {} -f fasta -g gff -w window -s step > output.bed".format(sys.argv[0]),
         epilog='author:\t{0}\nmail:\t{1}\ndate:\t{2}\nversion:\t{3}'.format(__author__, __mail__, __date__,
                                                                             __version__))
