@@ -57,7 +57,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         prog=sys.argv[0],
         formatter_class=argparse.RawTextHelpFormatter,
-        description='''Sliding window to stat gene fpkm''',
+        description='''Sliding window to stat gene mean fpkm''',
         usage="python {} -f fasta -g gff -w window -s step > output.bed".format(sys.argv[0]),
         epilog='author:\t{0}\nmail:\t{1}\ndate:\t{2}\nversion:\t{3}'.format(__author__, __mail__, __date__,
                                                                             __version__))
