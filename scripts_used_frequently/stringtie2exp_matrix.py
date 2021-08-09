@@ -36,7 +36,7 @@ def merge2matrix(files,output_file,valuetype):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 3:
+    if len(sys.argv) == 4:
         files = getFpkmfile(sys.argv[1])
         merge2matrix(files,sys.argv[2],sys.argv[3])
     else:
