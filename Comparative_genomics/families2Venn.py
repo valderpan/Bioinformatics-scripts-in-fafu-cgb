@@ -4,12 +4,13 @@
 # date: 2021/4/18
 
 '''
-python %prog <GeneCount file>
+%prog <GeneCount file>
 
 Gene family clustering based on orthofinder results
+GeneCount file : Orthogroups.GeneCount.tsv
 
 __author__ = Haoran Pan
-__mail__ = haoran_pan@qq.com
+__mail__ = panpyhr@gmail.com
 __date__ = 20210818
 __version__ = v4.1
 '''
@@ -32,6 +33,8 @@ def countfamilies(file):
 
 if __name__ == '__main__':
     from optparse import OptionParser
+    from rich.console import Console
+    console = Console()
     from rich.traceback import install
     install()
     p = OptionParser(__doc__)
@@ -39,6 +42,7 @@ if __name__ == '__main__':
 
     if len(args) == 1:
         count_file = args[0]
-        countfamilies(count_file)
+        with console.status("Working...", spinner="dots"):
+            countfamilies(count_file)
     else:
         sys.exit(p.print_help())
