@@ -1,15 +1,8 @@
 #!/usr/bin/env python3
 # -*- encoding:utf-8 -*-
 # @Author : Haoran Pan
-# date: 2021/8/20
+# date: 2021/8/29
 
-'''
-%prog
-
-Extraction of fpkm for a specific gene set
-Note1: The column name of the gene name column must be "gene_id"
-Note2: The suffix of geneID file must be [.txt]; the suffix of fpkm file must be [.xlsx]
-'''
 
 import re
 import sys
