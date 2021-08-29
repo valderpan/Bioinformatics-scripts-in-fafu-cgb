@@ -19,7 +19,7 @@ def modify_icedmatrix(matrix):
     df['newbin1'] = df['bin1'].astype(int)+1
     df['newbin2'] = df['bin2'].astype(int)+1
     newdf = df.loc[:,['newbin1','newbin2','score']]
-    newdf.to_csv('{}.modified.matirx'.format(prefix),sep='\t',header=False,index=False)
+    newdf.to_csv('{}.modified.matrix'.format(prefix),sep='\t',header=False,index=False)
 
 if __name__ == '__main__':
     from optparse import OptionParser
