@@ -32,7 +32,7 @@ def merge2matrix(files,output_file,valuetype):
     for i in range(1,len(mergedf_list)):
         df_1 = pd.merge(df_1,mergedf_list[i],on="Gene ID")
 
-    df_1.to_csv(output_file,sep='\t',header=True,index=False)
+    df_1.to_excel(output_file,header=True,index=False)
 
 
 if __name__ == '__main__':
@@ -42,4 +42,4 @@ if __name__ == '__main__':
     else:
         Font.Scripts_tip('Combine the expression values of each sample into a matrix after calculating the expressions from Hisat2+stringtie pipeline')
         print('Usage:')
-        print('\tpython {0} [Path of tab files] <output_tab_file> <FPKM|TPM>'.format(sys.argv[0]))
+        print('\tpython {0} [Path of tab files] <output.xlsx> <FPKM|TPM>'.format(sys.argv[0]))
