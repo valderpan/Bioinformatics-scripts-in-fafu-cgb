@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- encoding:utf-8 -*-
 # @Author : Haoran Pan
-# date: 2020/11/27
+# date: 2021/09/05
 
 '''
 %prog <Raw_exp.xlsx> <sample nums> [Clean_exp.xlsx]
