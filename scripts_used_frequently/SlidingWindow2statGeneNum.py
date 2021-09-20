@@ -65,8 +65,10 @@ def slid_window(geno_D,window,step):
             else:
                 if i < windows-1:
                     win_s += step
-                    win_e = win_s + window
-
+                    if win_s + window < len(geno_D[key]):
+                        win_e = win_s + window
+                    else:
+                        win_e = len(geno_D[key])
                     tree_D[key].addi(win_s,win_e,0)
                 else:
                     win_s += step
