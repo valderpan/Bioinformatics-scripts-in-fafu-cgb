@@ -5,9 +5,16 @@
 
 
 import sys
-import pandas as pd
 import math
+import argparse
+import pandas as pd
 from intervaltree import IntervalTree,Interval
+
+
+__author__ = 'Haoran Pan'
+__mail__ = 'panpyhr@gmail.com'
+__date__ = '20211015'
+__version__ = 'v2.0'
 
 
 def cal_Ks_valuecounts(Ks_file,limit):
@@ -46,11 +53,17 @@ def split_windows(L,S):
 
 
 def cal_Ks_density(ks_count_dict,tree,limit):
+    IDs = {}
     for key in ks_count_dict.keys():
         inter_L = sorted(tree[key])
         if len(inter_L) == 1:
             inter = inter_L[0]
             new_inter = Interval(inter.begin, inter.end, inter.data + ks_count_dict[key])
+            if not inter.begin in IDs:
+                IDs[inter.begin] = []
+                IDs[inter.begin].append(key)
+            else:
+                IDs[inter.begin].append(key)
             tree.remove(inter)
             tree.add(new_inter)
         else:
@@ -60,26 +73,50 @@ def cal_Ks_density(ks_count_dict,tree,limit):
                 tree.remove(inter)
                 tree.add(new_inter)
             else:
-                print('This value lies in two intervals!!!')  
-    return tree
+                print('This value lies in two intervals!!!')
+    return tree,IDs
 
 
-def convert_result(newtree,ks_name):
-    Dict = {}
+def convert_result(newtree, ks_name):
     for inter in sorted(newtree):
-        Dict[round(inter.begin,2)] = inter.data
+        #Dict[round(inter.begin, 2)] = inter.data
+        Dict[round(inter.end, 2)] = inter.data
     df = pd.DataFrame([Dict]).T
-    df.rename(columns={0:'{}_counts'.format(ks_name)},inplace=True)
-    df[ks_name] = df['{}_counts'.format(ks_name)]/sum(df['{}_counts'.format(ks_name)])*100
+    df.rename(columns={0: '{}_counts'.format(ks_name)}, inplace=True)
+    df[ks_name] = df['{}_counts'.format(ks_name)] / sum(df['{}_counts'.format(ks_name)]) * 100
     output = df.sort_index().reset_index()
+    mutate  = {'index':0,'{}_counts'.format(ks_name):0,'{}'.format(ks_name):0}
+    mutate_df = pd.DataFrame([mutate])
+    output = pd.concat([mutate_df,output])
     return output
 
 
+def main(args):
+    from rich.traceback import install
+    install()
+    KaKs_res = args.kaks
+    limit = args.limit
+    window = args.window
+    KaKs_name = args.name
+    ks_count_D = cal_Ks_valuecounts(KaKs_res,limit)
+    Tree = split_windows(limit,window)
+    newtree,IDs_D = cal_Ks_density(ks_count_D,Tree,limit)
+    output = convert_result(newtree,KaKs_name)
+    print(output)
+
+
 if __name__ == '__main__':
-    output = reads_mapping_calcultate(sys.argv[1],sys.argv[2],5.0)
-    output.to_excel('result1.xlsx',header=False,index=False)
-    ks_count_dict = cal_Ks_valuecounts(sys.argv[1],5.0)
-    tree = split_windows(5.0,0.01)
-    newtree = cal_Ks_density(ks_count_dict,tree,5.0)
-    o = convert_result(newtree,sys.argv[2])
-    o.to_excel('result2.xlsx',header=False,index=False)
+    import argparse
+    parser = argparse.ArgumentParser(
+        prog=sys.argv[0],
+        formatter_class=argparse.RawTextHelpFormatter,
+        description='''calculate Ks distribution''',
+        usage="python {} -k SsSo.KaKs.result -n SsSo -l limit -w window > output.bed".format(sys.argv[0]),
+        epilog='author:\t{0}\nmail:\t{1}\ndate:\t{2}\nversion:\t{3}'.format(__author__,
+                                                                            __mail__, __date__, __version__))
+    parser.add_argument('-k', '--kaks', required=True, help='Input KaKs result(.KaKs.result)')
+    parser.add_argument('-l', '--limit', required=True, type=float,help='Input Ks limit[float]')
+    parser.add_argument('-w', '--window', required=True,type=float, help='Input window size[float]')
+    parser.add_argument('-n', '--name', required=True,type=float, help='Input KaKs_file name')
+    args = parser.parse_args()
+    main(args)
