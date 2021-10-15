@@ -53,17 +53,11 @@ def split_windows(L,S):
 
 
 def cal_Ks_density(ks_count_dict,tree,limit):
-    IDs = {}
     for key in ks_count_dict.keys():
         inter_L = sorted(tree[key])
         if len(inter_L) == 1:
             inter = inter_L[0]
             new_inter = Interval(inter.begin, inter.end, inter.data + ks_count_dict[key])
-            if not inter.begin in IDs:
-                IDs[inter.begin] = []
-                IDs[inter.begin].append(key)
-            else:
-                IDs[inter.begin].append(key)
             tree.remove(inter)
             tree.add(new_inter)
         else:
@@ -74,10 +68,11 @@ def cal_Ks_density(ks_count_dict,tree,limit):
                 tree.add(new_inter)
             else:
                 print('This value lies in two intervals!!!')
-    return tree,IDs
+    return tree
 
 
 def convert_result(newtree, ks_name):
+    Dict= {}
     for inter in sorted(newtree):
         #Dict[round(inter.begin, 2)] = inter.data
         Dict[round(inter.end, 2)] = inter.data
@@ -100,7 +95,7 @@ def main(args):
     KaKs_name = args.name
     ks_count_D = cal_Ks_valuecounts(KaKs_res,limit)
     Tree = split_windows(limit,window)
-    newtree,IDs_D = cal_Ks_density(ks_count_D,Tree,limit)
+    newtree = cal_Ks_density(ks_count_D,Tree,limit)
     output = convert_result(newtree,KaKs_name)
     print(output)
 
@@ -117,6 +112,6 @@ if __name__ == '__main__':
     parser.add_argument('-k', '--kaks', required=True, help='Input KaKs result(.KaKs.result)')
     parser.add_argument('-l', '--limit', required=True, type=float,help='Input Ks limit[float]')
     parser.add_argument('-w', '--window', required=True,type=float, help='Input window size[float]')
-    parser.add_argument('-n', '--name', required=True,type=float, help='Input KaKs_file name')
+    parser.add_argument('-n', '--name', required=True, help='Input KaKs_file name')
     args = parser.parse_args()
     main(args)
