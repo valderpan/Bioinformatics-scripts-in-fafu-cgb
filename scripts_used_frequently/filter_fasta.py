@@ -49,6 +49,14 @@ def filter_re(D,keywords,output):
                 w3.write('>'+key+'\n')
                 w3.write(str(D[key])+'\n')
 
+		
+def filter_match(D,keywords,output):
+    with open(output,'w') as w4:
+        for key in D.keys():
+            if key == keywords:
+                w4.write('>'+key+'\n')
+                w4.write(str(D[key])+'\n')
+
 
 def main(args):
     install()
@@ -65,6 +73,8 @@ def main(args):
         filter_end(D,kw,output)
     elif mode == 're':
         filter_re(D,kw,output)
+    elif mode == 'match':
+        filter_match(D,kw,output)
 
 
 if __name__ == '__main__':
@@ -76,7 +86,7 @@ if __name__ == '__main__':
         epilog= 'author:\t{0}\nmail:\t{1}\ndate:\t{2}\nversion:\t{3}'.format(__author__,
 															__mail__,__date__,__version__))
     parser.add_argument('-f','--fasta',required=True,help='Input fasta')
-    parser.add_argument('-m','--mode',required=True,choices=['start','end','re'],help='Choose filter mode')
+    parser.add_argument('-m','--mode',required=True,choices=['start','end','re','match'],help='Choose filter mode')
     parser.add_argument('-k','--keywords',required=True,type=str,help='Input the filtered keywords or Regular expressions')
     parser.add_argument('-o','--output',required=True,help='Output the filtered fasta')
     args = parser.parse_args()
