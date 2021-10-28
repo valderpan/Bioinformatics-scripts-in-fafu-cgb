@@ -14,8 +14,8 @@ from rich.traceback import install
 
 __author__ = 'Haoran Pan'
 __mail__ = 'panpyhr@gmail.com'
-__date__ = '20210817'
-__version__ = 'v1.0'
+__date__ = '20211028'
+__version__ = 'v1.2'
 
 
 def store_fasta(fasta):
