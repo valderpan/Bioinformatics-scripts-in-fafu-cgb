@@ -150,7 +150,7 @@ if __name__ == '__main__':
         formatter_class=argparse.RawTextHelpFormatter,
         description='''Based on the compartment results with the gene ID file on the chromosome, assign each gene to the A/B compartment and count its percentage
         根据compartment结果与染色体上的基因ID文件，给每个基因分配到A/B compartment并统计其占比''',
-        usage="python {} -a -o1 ".format(sys.argv[0]),
+        usage="python {} -a anchors -1c s1com.csv -2c s2com.csv -1b s1jcvi.bed -2b s2jcvi.bed -1o s1out.txt -2o s2out.txt".format(sys.argv[0]),
         epilog='author:\t{0}\nmail:\t{1}\ndate:\t{2}\nversion:\t{3}'.format(__author__,
                                                                             __mail__, __date__, __version__))
     parser.add_argument('-a', '--anchors', required=True, help='Input query anchors file')
