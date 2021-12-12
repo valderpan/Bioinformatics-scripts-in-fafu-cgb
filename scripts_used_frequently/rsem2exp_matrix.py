@@ -1,19 +1,24 @@
-# #!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- encoding:utf-8 -*-
+# @Author : Haoran Pan
+# date: 2021/12/12
 
 
-import os
+import sys
+sys.path.append('/share/home/stu_panhaoran/scripts')
 import subprocess
 from datetime import datetime
-import re
 import pandas as pd
 import argparse
+import richlog as rl
+from path import Path
 
-#Description : This script is used to convert RSEM quantitative results into a gene expression matrix
-#Usage : python rsem2gene_exp_df.py path1 path2
-#Note : path1 is the parent directory where rsem output files are stored ; path2 is the parent directory of fpkm-1 and fpkm-2
 
-Folder_name_list = []
+__author__ = 'Haoran Pan'
+__mail__ = 'panpyhr@gmail.com'
+__date__ = '20211212'
+__version__ = 'v1.0'
+
 
 def run_command(cmd):
     print(cmd)
@@ -21,106 +26,66 @@ def run_command(cmd):
     if return_code != 0 :
         print('ERROR:[{2}] Return code {0} when running the following command : {1} '.format(return_code, cmd,datetime.now()))
 
-def Get_folder_name(folder_path):
-    path1 = folder_path
-    path_folder = os.listdir(path1)
-    for folder in path_folder:
-        Folder_name_list.append(folder)
 
-    os.mkdir(path2 + 'fpkm-1')
-    os.mkdir(path2 + 'fpkm-2')
-    return Folder_name_list
-
-# Step 1: Rename and copy Rsem.genes.result under each sample-ID directory to fpkm-1 directory
-def rename_and_copy(folder_path):
-    for folder in Folder_name_list:
-        os.chdir(folder_path + folder)
-        cmd1 = 'mv ' + 'RSEM.genes.results ' + folder+'.genes.results'
-        run_command(cmd1)
-        cmd2 = 'cp ' + folder +'.genes.results' + ' ../../fpkm-1/'
-        run_command(cmd2)
+def get_RSEMdirs(dirpath):
+    dirs = [dir for dir in Path(dirpath).dirs()]
+    return dirs
 
 
-# Step 2: Extract the first and seventh columns from each file in the fpkm-1 directory and enter them into the fpkm-2 directory
-def gain_IDandFPKM(path):
-    fpkm_1_path = path  + 'fpkm-1'
-    fpkm_1_list = os.listdir(fpkm_1_path)
-    os.chdir(fpkm_1_path)
-    for i in fpkm_1_list:
-        cmd3 = 'cat ' + i + '|' + 'cut -f 1,7' + ' >' + i+'.fpkm.result'
-        run_command(cmd3)
-        cmd4 = 'mv ' + i + '.fpkm.result ' + '../fpkm-2/'
-        run_command(cmd4)
+def rm_dirsbam(dirs):
+    for dir in dirs:
+        run_command('rm {}/*.bam'.format(dir))
 
 
-# Step 3: Merge each file in the fpkm-2 directory into an expression matrix and output the matrix
-def merge_files_to_matrix(path,keyword):
-    fpkm_2_path = path + 'fpkm-2'
-    os.chdir(fpkm_2_path)
-    fpkm_file_list = os.listdir('../')
-    fpkm_file = []
-    for i in fpkm_file_list:
-        # j = re.findall('([a-zA-Z0-9\-]+)\.',i)
-        j = re.findall(keyword,i)
-        fpkm_file.append(j[0])
+def gain_Samplematrix(dirs,Type):
+    df_L = []
+    for dir in dirs:
+        ndir = dir.basename()
+        df = pd.read_table('{}/RSEM.genes.results'.format(dir),sep='\t')
+        if Type == 'FPKM':
+            qdf = df.iloc[:,[0,-1]]
+            qdf.rename(columns={'FPKM':ndir},inplace=True)
+            df_L.append(qdf)
+        elif Type == 'TPM':
+            qdf = df.iloc[:,[0,-2]]
+            qdf.rename(columns={'TPM': ndir}, inplace=True)
+            df_L.append(qdf)
+        else:
+            rl.error('Error:Please enter the correct expression type: TPM or FPKM')
+    return df_L
 
 
-    first_data = pd.read_csv(fpkm_file_list[0],sep = '\t',names=['gene_id',fpkm_file[0]])
-    first_data = first_data.drop(first_data.index[0])
-    file_dict = {}
-    # print(first_data)
+def merge2matrix(df_L,prefix,Type):
+    mdf = df_L[0]
+    for i in range(1,len(df_L)):
+        mdf = pd.merge(mdf,df_L[i],on='gene_id')
+    mdf.to_excel('{}.{}.xlsx'.format(prefix,Type),header=True,index=False)
+    mdf.to_csv('{}.{}.csv'.format(prefix,Type),header=True,index=False)
 
-    for i in range(1,len(fpkm_file_list)):
-        file_dict[i] = pd.read_csv(fpkm_file_list[i],sep = '\t',names=['gene_id',fpkm_file[i]])
-        if i < len(fpkm_file_list):
-            first_data = pd.merge(first_data,file_dict[i],on='gene_id')
-
-    first_data.to_excel('fpkm_dataframe.xlsx',header=True,index=False)
-
-
-# Step 4: Output the matrix file and delete the generated intermediate directory
-def Delete_the_created_files(path,folder_path):
-    cmd5 = 'mv ' + 'fpkm_dataframe.xlsx' + ' ../'
-    run_command(cmd5)
-    os.chdir(path)
-    cmd6 = 'rm -rf ' + 'fpkm-1'
-    run_command(cmd6)
-    cmd7 = 'rm -rf ' + 'fpkm-2'
-    run_command(cmd7)
-    for folder in Folder_name_list:
-        os.chdir(folder_path + folder)
-        cmd8 = 'mv ' + folder+'.genes.results '+ 'RSEM.genes.results'
-        run_command(cmd8)
 
 def main(args):
-    folder_path = args.path1
-    global path2
-    path2 = args.path2
-    keyword = args.key
-
-    Get_folder_name(folder_path)
-    print('Step 1: Rename and copy Rsem.genes.result under each sample-ID directory to fpkm-1 directory.\n')
-    rename_and_copy(folder_path)
-
-    print('Step 2: Extract the first and seventh columns from each file in the fpkm-1 directory and enter them into the fpkm-2 director.\n')
-    gain_IDandFPKM(path2)
-
-    print('Step 3: Merge each file in the fpkm-2 directory into an expression matrix and output the matrix.\n')
-    merge_files_to_matrix(path2,keyword)
-
-    print('Step 4: Output the matrix file and delete the generated intermediate directory.\n')
-    Delete_the_created_files(path2,folder_path)
-
-    print('All tasks were finished!\n')
+    from rich.traceback import install
+    install()
+    dirspath = args.path
+    Type = args.type
+    oprefix = args.outprefix
+    dirs = get_RSEMdirs(dirspath)
+    rm_dirsbam(dirs)
+    df_L = gain_Samplematrix(dirs,Type)
+    merge2matrix(df_L,oprefix,Type)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        prog='rsem2gene_exp_df.py',
+        prog=sys.argv[0],
         formatter_class=argparse.RawTextHelpFormatter,
-        description='''This script is used to convert RSEM quantitative results into a gene expression matrix''')
-    parser.add_argument('-path1',required=True,help='path1 is the parent directory where rsem output files are stored')
-    parser.add_argument('-path2',required=True,help='path2 is the parent directory of fpkm-1 and fpkm-2')
-    parser.add_argument('-key',required=True,help='Please enter regular expression keywords')
+        description='''This script is used to convert RSEM quantitative results into a gene expression matrix''',
+        usage="python {} -p rsem_out_path -t FPKM/TPM -p output_prefix ".format(sys.argv[0]),
+        epilog='author:\t{0}\nmail:\t{1}\ndate:\t{2}\nversion:\t{3}'.format(__author__,
+                                                                            __mail__, __date__, __version__))
+    parser.add_argument('-p', '--path', required=True, help='Input RSEM output path')
+    parser.add_argument('-t', '--type', required=True,choices=['FPKM','TPM'], help='Input expression values type')
+    parser.add_argument('-o', '--outprefix', required=True, help='Please specify the prefix of the output file')
     args = parser.parse_args()
     main(args)
+
