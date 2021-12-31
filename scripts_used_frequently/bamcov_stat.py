@@ -48,10 +48,10 @@ def Output_res(covfile,Chr2cov,Chr2len):
     with open('{}.stat'.format(covfile),'w') as w:
         w.write('{}\t{}\t{}\t{}\n'.format('seqid','Cov_len','Gen_cov','ratio'))
         for key in Chr2cov.keys():
-            w.write('{}\t{}\t{}\t{}\n'.format(key,Chr2cov[key],Chr2len[key],round(Chr2cov[key]/Chr2len[key],4)*100))
+            w.write('{}\t{}\t{}\t{}\n'.format(key,Chr2cov[key],Chr2len[key],round(Chr2cov[key]/Chr2len[key],5)*100))
             Gen_len += Chr2len[key]
             Cov_len += Chr2cov[key]
-        w.write('{}\t{}\t{}\t{}'.format('Total',Cov_len,Gen_len,round(Cov_len/Gen_len,4)*100))
+        w.write('{}\t{}\t{}\t{}'.format('Total',Cov_len,Gen_len,round(Cov_len/Gen_len,5)*100))
 
 
 if __name__ == "__main__":
