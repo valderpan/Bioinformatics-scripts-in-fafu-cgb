@@ -9,10 +9,12 @@
 Gene family clustering based on orthofinder results
 GeneCount file : Orthogroups.GeneCount.tsv
 
+>>> python %prog Orthogroups.GeneCount.tsv
+
 __author__ = Haoran Pan
 __mail__ = panpyhr@gmail.com
 __date__ = 20210818
-__version__ = v4.1
+__version__ = v4.2
 '''
 
 import sys
