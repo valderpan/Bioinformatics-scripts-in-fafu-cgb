@@ -50,8 +50,8 @@ def stat_OGnum_genes(GeneCdf,OGdf):
 
 
 def output_OGD(OGD):
-    for key in OGD.keys():
-        print('[bold green]{}[/bold green]\t[bold yellow]{}[/bold yellow]\t[bold red]{}[/bold red]'.format(key,OGD[key][0],OGD[key][1]))
+    for item in sorted(OGD.items(),key=lambda x:x[1][0],reverse=False):
+        print('[bold green]{}[/bold green]\t[bold yellow]{}[/bold yellow]\t[bold red]{}[/bold red]'.format(item[0],OGD[item[0]][0],OGD[item[0]][1]))
 
 
 if __name__ == '__main__':
