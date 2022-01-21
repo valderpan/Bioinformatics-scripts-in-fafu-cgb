@@ -38,11 +38,8 @@ def stat_OGnum_genes(GeneCdf,OGdf):
     for col in col_name:
         qOG = [i for i in OGdf[col].tolist() if pd.isnull(i) == False]
         qdf = GeneCdf[GeneCdf['Orthogroup'].isin(qOG)]
-        # print(qdf)
-        #print(qdf.shape[0],len(qOG))
         if qdf.shape[0] == len(qOG):
             Gtotal = qdf['Total'].sum()
-            # print(Gtotal)
             OGD[col] = [len(qOG),Gtotal]
         else:
             print('[bold magenta]{} rows != len(OGids) !!! Please check it ![/bold magenta]'.format(col))
