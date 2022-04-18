@@ -5,7 +5,10 @@
 '''
 %prog <matirx file> <row num> <output.noctg.matrix>
 
+>>> python %prog ZG_100000_iced.matrix 63228
+
 Delete the contig level interaction signal from the Hi-C matrix file
+row num : the index value corresponding to the last bin of the last chromosome
 '''
 
 import re
